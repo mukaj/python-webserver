@@ -22,3 +22,7 @@ class Request:
         method, target, version = line.split()
 
         return cls(method=method, target=target, http_version=version)
+
+    @property
+    def target_paths(self) -> list[str]:
+        return self.target.split("/")
