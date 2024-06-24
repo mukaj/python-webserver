@@ -23,17 +23,27 @@ def handle_connection(conn, addr):
         response.headers["Content-Type"] = "text/plain"
         response.headers["Content-Length"] = str(len(response_body))
     elif request.target_paths and request.target_paths[1] == "files":
-        response = Response(status=200)
-        file_name = request.target_paths[2]
+        if request.method == "GET":
+            response = Response(status=200)
+            file_name = request.target_paths[2]
 
-        try:
-            with open(file=sys.argv[2] + file_name) as target_file:
-                content = target_file.read()
-                response.headers["Content-Type"] = "application/octet-stream"
-                response.headers["Content-Length"] = str(len(content))
-                response.body = content
-        except FileNotFoundError:
-            response.status = 404
+            try:
+                with open(file=sys.argv[2] + file_name) as target_file:
+                    content = target_file.read()
+                    response.headers["Content-Type"] = "application/octet-stream"
+                    response.headers["Content-Length"] = str(len(content))
+                    response.body = content
+            except FileNotFoundError:
+                response.status = 404
+        elif request.method == "POST":
+            response = Response(status=201)
+            file_name = request.target_paths[2]
+
+            try:
+                with open(file=sys.argv[2] + file_name, mode="x") as target_file:
+                    target_file.write(request.body)
+            except FileNotFoundError:
+                response.status = 404
 
     else:
         response = Response(status=404)

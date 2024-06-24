@@ -12,6 +12,7 @@ class Response:
     STATUS_CODES = {
         200: "OK",
         404: "Not Found",
+        201: "Created",
     }
 
     def send_response(self) -> bytes:
