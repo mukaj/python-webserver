@@ -1,6 +1,6 @@
 import socket
 
-from .request_helper import Request
+from .request import Request
 
 
 def main():
