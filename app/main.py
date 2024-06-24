@@ -1,5 +1,6 @@
 import socket
 import threading
+import sys
 
 from .request import Request
 from .response import Response
@@ -21,6 +22,19 @@ def handle_connection(conn, addr):
         response = Response(status=200, body=response_body)
         response.headers["Content-Type"] = "text/plain"
         response.headers["Content-Length"] = str(len(response_body))
+    elif request.target_paths and request.target_paths[1] == "files":
+        response = Response(status=200)
+        file_name = request.target_paths[2]
+
+        try:
+            with open(file=sys.argv[2] + file_name) as target_file:
+                content = target_file.read()
+                response.headers["Content-Type"] = "application/octet-stream"
+                response.headers["Content-Length"] = str(len(content))
+                response.body = content
+        except FileNotFoundError:
+            response.status = 404
+
     else:
         response = Response(status=404)
 
