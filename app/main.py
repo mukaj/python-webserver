@@ -22,6 +22,10 @@ def main():
         response.headers["Content-Type"] = "text/plain"
         response.headers["Content-Length"] = str(len(message))
     elif request.target_paths and request.target_paths[1] == "user-agent":
+        response_body = request.headers["User-Agent"]
+        response = Response(status=200, body=response_body)
+        response.headers["Content-Type"] = "text/plain"
+        response.headers["Content-Length"] = str(len(response_body))
     else:
         response = Response(status=404)
 
