@@ -8,6 +8,7 @@ class Request:
     target: str
     http_version: str
     headers: Dict[str, str] = field(default_factory=dict)
+    body: str = field(default=None)
 
     @classmethod
     def from_string(cls, request_string: str) -> "Request":
@@ -20,20 +21,23 @@ class Request:
         Returns:
             Request: An instance of the Request class.
         """
-        line_ending = request_string.find("\r\n")
-        status_line = request_string[:line_ending]
+        status_line, *tail = request_string.split("\r\n")
         headers: Dict[str, str] = {}
 
-        for header_str in request_string[line_ending + 2 :].split("\r\n"):
-            if header_str == "":
-                break
+        while (header_str := tail.pop(0)) != "":
             header, value = header_str.split(":", maxsplit=1)
-            print(header + "  " + value)
             headers[header] = value.strip()
 
         method, target, version = status_line.split()
+        body = "".join(tail)
 
-        return cls(method=method, target=target, http_version=version, headers=headers)
+        return cls(
+            method=method,
+            target=target,
+            http_version=version,
+            headers=headers,
+            body=body,
+        )
 
     @property
     def target_paths(self) -> list[str]:
