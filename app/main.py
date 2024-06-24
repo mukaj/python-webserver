@@ -1,6 +1,7 @@
 import socket
 
 from .request import Request
+from .response import Response
 
 
 def main():
