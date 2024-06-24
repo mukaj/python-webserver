@@ -16,17 +16,16 @@ def main():
 
     if request.target == "/":
         response = Response(status=200)
-        conn.sendall(response.send_response())
     elif request.target_paths and request.target_paths[1] == "echo":
         message = request.target_paths[2]
         response = Response(status=200, body=message)
         response.headers["Content-Type"] = "text/plain"
         response.headers["Content-Length"] = str(len(message))
-        conn.sendall(response.send_response())
+    elif request.target_paths and request.target_paths[1] == "user-agent":
     else:
         response = Response(status=404)
-        conn.sendall(response.send_response())
-        # conn.sendall(b"HTTP/1.1 404 Not Found\r\n\r\n")
+
+    conn.sendall(response.send_response())
 
 
 if __name__ == "__main__":
