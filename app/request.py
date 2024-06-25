@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Dict
+from typing import Dict, Set
 
 
 @dataclass
@@ -9,7 +9,7 @@ class Request:
     http_version: str
     headers: Dict[str, str] = field(default_factory=dict)
     body: str = field(default=None)
-    accept_encoding: str = field(default="")
+    accept_encodings: Set[str] = field(default_factory=set)
 
     @classmethod
     def from_string(cls, request_string: str) -> "Request":
@@ -29,9 +29,10 @@ class Request:
             header, value = header_str.split(":", maxsplit=1)
             headers[header] = value.strip()
 
-        accept_encoding = None
+        accepted_encodings: Set[str] = set()
         if "Accept-Encoding" in headers:
-            accept_encoding = headers.pop("Accept-Encoding")
+            for encoding in headers.pop("Accept-Encoding").split(","):
+                accepted_encodings.add(encoding.strip())
 
         method, target, version = status_line.split()
         body = "".join(tail)
@@ -42,7 +43,7 @@ class Request:
             http_version=version,
             headers=headers,
             body=body,
-            accept_encoding=accept_encoding,
+            accept_encodings=accepted_encodings,
         )
 
     @property
