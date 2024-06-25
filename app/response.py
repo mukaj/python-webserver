@@ -5,7 +5,7 @@ from typing import Dict, Optional
 @dataclass
 class Response:
     status: int
-    body: Optional[str] = field(default=None)
+    body: Optional[str | bytes] = field(default=None)
     http_version: str = field(default="1.1")
     headers: Dict[str, str] = field(default_factory=dict)
 
@@ -30,6 +30,9 @@ class Response:
 
         response += b"\r\n"
         if self.body:
-            response += bytes(self.body, encoding="utf-8")
+            if type(self.body) == bytes:
+                response += self.body
+            else:
+                response += bytes(self.body, encoding="utf-8")
 
         return response
