@@ -9,6 +9,7 @@ class Request:
     http_version: str
     headers: Dict[str, str] = field(default_factory=dict)
     body: str = field(default=None)
+    accept_encoding: str = field(default="")
 
     @classmethod
     def from_string(cls, request_string: str) -> "Request":
@@ -28,6 +29,10 @@ class Request:
             header, value = header_str.split(":", maxsplit=1)
             headers[header] = value.strip()
 
+        accept_encoding = None
+        if "Accept-Encoding" in headers:
+            accept_encoding = headers.pop("Accept-Encoding")
+
         method, target, version = status_line.split()
         body = "".join(tail)
 
@@ -37,6 +42,7 @@ class Request:
             http_version=version,
             headers=headers,
             body=body,
+            accept_encoding=accept_encoding,
         )
 
     @property
