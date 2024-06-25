@@ -48,7 +48,7 @@ def handle_connection(conn, addr):
     else:
         response = Response(status=404)
 
-    if request.accept_encoding == "gzip":
+    if "gzip" in request.accept_encodings:
         response.headers["Content-Encoding"] = "gzip"
 
     conn.sendall(response.send_response())
