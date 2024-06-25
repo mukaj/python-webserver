@@ -1,6 +1,7 @@
 import socket
 import threading
 import sys
+import gzip
 
 from .request import Request
 from .response import Response
@@ -49,6 +50,8 @@ def handle_connection(conn, addr):
         response = Response(status=404)
 
     if "gzip" in request.accept_encodings:
+        response.body = gzip.compress(response.body.encode())
+        response.headers["Content-Length"] = str(len(response.body))
         response.headers["Content-Encoding"] = "gzip"
 
     conn.sendall(response.send_response())
